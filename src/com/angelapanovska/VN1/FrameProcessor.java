@@ -3,7 +3,6 @@ package com.angelapanovska.VN1;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.util.Arrays;
 

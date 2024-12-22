@@ -1,0 +1,14 @@
+# Ignore build files
+*.class
+*.jar
+
+# IntelliJ-specific files
+.idea/
+*.iml
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Output and temporary files
+out/

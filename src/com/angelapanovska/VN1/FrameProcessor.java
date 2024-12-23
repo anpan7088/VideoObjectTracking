@@ -60,6 +60,16 @@ public class FrameProcessor {
 
         BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
+        int [][] labels = new int[width][height]; // matrix for the region labels
+        int labelCounter = 1; // Initialize labelCounter
+
+        // list of predefined colors for objects
+        Color [] colors = {
+            Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.CYAN, Color.MAGENTA, Color.CYAN,
+            new Color(255,165,0), //Orange
+            new Color(128, 0, 128) // Purple
+        };
+
         int threshold = 30; // threshold for pixel difference
         int regionCounter = 0; // Initialize regionCounter
 
@@ -73,23 +83,12 @@ public class FrameProcessor {
                 // absolute difference between RGB values
                 int diff = Math.abs((prevPixel & 0xFF) - (currPixel & 0xFF));
 
-                if (diff > threshold) {
-                    // lets highlight the change (red color overlay)
-                    int region = objectRegions.getOrDefault(y * width + x, regionCounter++);
-
-                    // Assign a unique color to the region
-                    Color color = objectColors.get(region % objectColors.size());
-                    result.setRGB(x, y, new Color(color.getRed(), color.getGreen(), color.getBlue(), 128).getRGB());
-                } else {
-                    // keep the original pixel
-                    result.setRGB(x, y, currentFrame.getRGB(x, y));
+               if (diff > threshold) {
+                labels[x][y] = 0; // mark pixel as part of a moving region
                 }
             }
         }
         return result;
     }
-
-    private Color getColorForRegion(int regionIndex) {
-        return objectColors.get(regionIndex % objectColors.size());
+    
     }
-}

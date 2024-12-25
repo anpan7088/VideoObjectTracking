@@ -5,21 +5,26 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.*;
+import java.util.List;
+import java.util.Queue;
 
 public class FrameProcessor {
     private String inputFolderPath;
     private String outputFolderPath;
-    private java.util.List<Color> objectColors;
-
-    public FrameProcessor(String inputFolderPath, String outputFolderPath) {
-        this.inputFolderPath = inputFolderPath;
-        this.outputFolderPath = outputFolderPath;
-
-        // defining the colors of the objects we want to track
-        this.objectColors = new ArrayList<>(Arrays.asList(
+    private List<Color> objectColors;
+       
+    
+        public FrameProcessor(String inputFolderPath, String outputFolderPath) {
+            this.inputFolderPath = inputFolderPath;
+            this.outputFolderPath = outputFolderPath;
+    
+            // defining the colors of the objects we want to track
+            this.objectColors = new ArrayList<>(Arrays.asList(
                 Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.CYAN, Color.MAGENTA,
-                Color.YELLOW, new Color(128, 0, 128), new Color(0, 128, 128), new Color(128, 128, 0),
-                new Color(128, 0, 0)));
+                new Color(255, 165, 0), // Orange
+                new Color(128, 0, 128) // Purple
+            ));
+
     }
 
     public void processFrames() {
@@ -70,7 +75,7 @@ public class FrameProcessor {
                 new Color(128, 0, 128) // Purple
         };
 
-        int threshold = 30; // threshold for pixel difference
+        int threshold = 5; // threshold for pixel difference
         //int regionCounter = 0; // Initialize regionCounter
 
         Map<Integer, Color> labelToColor = new HashMap<>(); // Initialize labelToColor map
@@ -79,14 +84,17 @@ public class FrameProcessor {
             for (int y = 0; y < height; y++) {
                 int prevPixel = prevFrame.getRGB(x, y);
                 int currPixel = currentFrame.getRGB(x, y);
-
-                // absolute difference between RGB values
-                int diff = Math.abs((prevPixel & 0xFF) - (currPixel & 0xFF));
-
+               
+               
+                int redDiff = Math.abs(((prevPixel >> 16) & 0xFF) - ((currPixel >> 16) & 0xFF));
+                int greenDiff = Math.abs(((prevPixel >> 8) & 0xFF) - ((currPixel >> 8) & 0xFF));
+                int blueDiff = Math.abs((prevPixel & 0xFF) - (currPixel & 0xFF));
+                int diff = redDiff + greenDiff + blueDiff;
+    
                 if (diff > threshold) {
                     if (labels[x][y] == 0) {
                         floodFill(labels, x, y, labelCounter, width, height);
-                        labelToColor.put(labelCounter, colors[labelCounter % colors.length]);
+                        labelToColor.put(labelCounter, objectColors.get(labelCounter % objectColors.size()));
                         labelCounter++;
                     }
                 }

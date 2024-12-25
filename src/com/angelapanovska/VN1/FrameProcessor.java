@@ -5,30 +5,19 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.*;
-import java.util.List;
-import java.util.Queue;
 
 public class FrameProcessor {
     private String inputFolderPath;
     private String outputFolderPath;
-    private List<Color> objectColors;
-       
-    
-        public FrameProcessor(String inputFolderPath, String outputFolderPath) {
-            this.inputFolderPath = inputFolderPath;
-            this.outputFolderPath = outputFolderPath;
-    
-            // defining the colors of the objects we want to track
-            this.objectColors = new ArrayList<>(Arrays.asList(
-                Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.CYAN, Color.MAGENTA,
-                new Color(255, 165, 0), // Orange
-                new Color(128, 0, 128) // Purple
-            ));
 
+    public FrameProcessor(String inputFolderPath, String outputFolderPath) {
+        this.inputFolderPath = inputFolderPath;
+        this.outputFolderPath = outputFolderPath;
     }
 
-    public void processFrames() {
-        try {
+
+        public void processFrames() {
+            try {
             // listing all frame files in the input folder
             File inputFolder = new File(inputFolderPath);
             File[] frameFiles = inputFolder.listFiles((dir, name) -> name.endsWith(".png"));
@@ -42,100 +31,75 @@ public class FrameProcessor {
 
             BufferedImage prevFrame = ImageIO.read(frameFiles[0]); // read the first frame
 
-            for (int i = 1; i < frameFiles.length; i++) {
+            for (int i = 0; i < frameFiles.length; i++) {
                 BufferedImage currentFrame = ImageIO.read(frameFiles[i]);
 
-                // processing the frames and detecting differencies razliki
-                BufferedImage processedFrame = detectChanges(prevFrame, currentFrame);
+                //Process the frame for red object tracking
+                BufferedImage processedFrame = trackRedObject(currentFrame);
 
-                // save the frames
-                String outputFileName = outputFolderPath + "/frame_" + i + ".png";
-                ImageIO.write(processedFrame, "png", new File(outputFileName));
+                // Save the result to the output folder
+                String outputFilePath = outputFolderPath + "/frame_" + i + ".png";
+                File outputFile = new File(outputFilePath);
+                ImageIO.write(processedFrame, "png", outputFile);
 
-                prevFrame = currentFrame; // update previous frame
+                prevFrame = currentFrame; // Update the previous frame for the next iteration
             }
+
+            System.out.println("Processing completed!");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private BufferedImage detectChanges(BufferedImage prevFrame, BufferedImage currentFrame) {
-        int width = prevFrame.getWidth();
-        int height = prevFrame.getHeight();
-
-        BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-
-        int[][] labels = new int[width][height]; // matrix for the region labels
-        int labelCounter = 1; // Initialize labelCounter
-
-        // list of predefined colors for objects
-        Color[] colors = {
-                Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.CYAN, Color.MAGENTA, Color.CYAN,
-                new Color(255, 165, 0), // Orange
-                new Color(128, 0, 128) // Purple
-        };
-
-        int threshold = 5; // threshold for pixel difference
-        //int regionCounter = 0; // Initialize regionCounter
-
-        Map<Integer, Color> labelToColor = new HashMap<>(); // Initialize labelToColor map
-
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                int prevPixel = prevFrame.getRGB(x, y);
-                int currPixel = currentFrame.getRGB(x, y);
-               
-               
-                int redDiff = Math.abs(((prevPixel >> 16) & 0xFF) - ((currPixel >> 16) & 0xFF));
-                int greenDiff = Math.abs(((prevPixel >> 8) & 0xFF) - ((currPixel >> 8) & 0xFF));
-                int blueDiff = Math.abs((prevPixel & 0xFF) - (currPixel & 0xFF));
-                int diff = redDiff + greenDiff + blueDiff;
+    private BufferedImage trackRedObject(BufferedImage frame) {
+        int width = frame.getWidth();
+        int height = frame.getHeight();
     
-                if (diff > threshold) {
-                    if (labels[x][y] == 0) {
-                        floodFill(labels, x, y, labelCounter, width, height);
-                        labelToColor.put(labelCounter, objectColors.get(labelCounter % objectColors.size()));
-                        labelCounter++;
-                    }
+        BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = result.createGraphics();
+
+        // lets copy the original framee to the result
+        g2d.drawImage(frame, 0, 0, null); 
+
+        int brightnessThreshold = 50;
+
+        int minX = width, minY = height, maxX = 0, maxY = 0;
+        boolean objectFound = false;
+
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                int pixel = frame.getRGB(x, y);
+
+                int red = (pixel >> 16) & 0xff;
+                int green = (pixel >> 8) & 0xff;
+                int blue = pixel & 0xff;
+                
+                
+
+                // lets check if the pixel is red
+                if(red > brightnessThreshold && green < brightnessThreshold && blue < brightnessThreshold) {
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
+                    // lets draw a rectangle around the red object
+                
+                    objectFound = true;
                 }
+        
             }
         }
 
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                int label = labels[x][y];
-                if (label > 0) {
-                    Color color = labelToColor.get(label);
-                    result.setRGB(x, y, color.getRGB());
-                } else {
-                    result.setRGB(x, y, currentFrame.getRGB(x, y)); // keep non-moving pixels
-                }
-            }
+        if (objectFound) {
+            // lets draw a rectangle around the red object
+            g2d.setColor(Color.GREEN);
+            g2d.setStroke(new BasicStroke(2));
+            g2d.drawRect(minX, minY, maxX - minX, maxY - minY);
+
+            System.out.println("Bounding box coordinates: " + minX + ", " + minY + ", " + maxX + ", " + maxY);
         }
+
+        g2d.dispose();
         return result;
     }
-
-    // method flood fill alggorithm for connected component labeling
-    private void floodFill(int[][] labels, int x, int y, int label, int width, int height) {
-        Queue<int[]> queue = new LinkedList<>();
-        queue.add(new int[] { x, y });
-
-        while (!queue.isEmpty()) {
-            int[] pixel = queue.poll();
-            int px = pixel[0];
-            int py = pixel[1];
-
-            if (px < 0 || px >= width || py < 0 || py >= height || labels[px][py] != 0) {
-                continue; // out of bounds or already labeled
-            }
-            labels[px][py] = label;
-
-            // lets add neighbours to the queue
-            queue.add(new int[] { px + 1, py });
-            queue.add(new int[] { px - 1, py });
-            queue.add(new int[] { px, py + 1 });
-            queue.add(new int[] { px, py - 1 });
-        }
-    }
-
 }

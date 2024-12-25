@@ -61,7 +61,7 @@ public class FrameProcessor {
         // lets copy the original framee to the result
         g2d.drawImage(frame, 0, 0, null); 
 
-        int brightnessThreshold = 50;
+        //int brightnessThreshold = 50;
 
         int minX = width, minY = height, maxX = 0, maxY = 0;
         boolean objectFound = false;
@@ -76,15 +76,19 @@ public class FrameProcessor {
                 
                 
 
-                // lets check if the pixel is red
-                if(red > brightnessThreshold && green < brightnessThreshold && blue < brightnessThreshold) {
+                // lets check if the pixel matches the object-like colors (black or dark with contrast))))))
+                if((red < 80 && green < 80 && blue < 80) || (red > 200 && green > 200 && blue > 200)) {
                     minX = Math.min(minX, x);
                     minY = Math.min(minY, y);
                     maxX = Math.max(maxX, x);
                     maxY = Math.max(maxY, y);
-                    // lets draw a rectangle around the red object
+                    
                 
                     objectFound = true;
+
+                   if (x>= 0 && x < width && y>=0 && y < height){
+                    result.setRGB(x, y, Color.YELLOW.getRGB());
+                   }
                 }
         
             }
@@ -92,12 +96,14 @@ public class FrameProcessor {
 
         if (objectFound) {
             // lets draw a rectangle around the red object
+            if ((maxX - minX) > 10 && (maxY - minY) > 10) {
             g2d.setColor(Color.GREEN);
             g2d.setStroke(new BasicStroke(2));
             g2d.drawRect(minX, minY, maxX - minX, maxY - minY);
 
             System.out.println("Bounding box coordinates: " + minX + ", " + minY + ", " + maxX + ", " + maxY);
         }
+    }
 
         g2d.dispose();
         return result;

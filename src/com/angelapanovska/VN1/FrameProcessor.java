@@ -15,9 +15,8 @@ public class FrameProcessor {
         this.outputFolderPath = outputFolderPath;
     }
 
-
-        public void processFrames() {
-            try {
+    public void processFrames() {
+        try {
             // listing all frame files in the input folder
             File inputFolder = new File(inputFolderPath);
             File[] frameFiles = inputFolder.listFiles((dir, name) -> name.endsWith(".png"));
@@ -31,11 +30,11 @@ public class FrameProcessor {
 
             BufferedImage prevFrame = ImageIO.read(frameFiles[0]); // read the first frame
 
-            for (int i = 0; i < frameFiles.length; i++) {
+            for (int i = 1; i < frameFiles.length; i++) {
                 BufferedImage currentFrame = ImageIO.read(frameFiles[i]);
 
-                //Process the frame for red object tracking
-                BufferedImage processedFrame = trackRedObject(currentFrame);
+                // Process the frame for red object tracking
+                BufferedImage processedFrame = trackRedObject(currentFrame, prevFrame);
 
                 // Save the result to the output folder
                 String outputFilePath = outputFolderPath + "/frame_" + i + ".png";
@@ -51,54 +50,66 @@ public class FrameProcessor {
         }
     }
 
-    private BufferedImage trackRedObject(BufferedImage frame) {
+    private BufferedImage trackRedObject(BufferedImage frame, BufferedImage prevFrame) {
         int width = frame.getWidth();
         int height = frame.getHeight();
-    
+
         BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = result.createGraphics();
 
         // lets copy the original framee to the result
-        g2d.drawImage(frame, 0, 0, null); 
+        g2d.drawImage(frame, 0, 0, null);
 
-        //int brightnessThreshold = 50;
-
+        int intensityThreshold = 150;
         int minX = width, minY = height, maxX = 0, maxY = 0;
         boolean objectFound = false;
 
-        for(int x = 0; x < width; x++) {
-            for(int y = 0; y < height; y++) {
-                int pixel = frame.getRGB(x, y);
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                int prevPixel = prevFrame.getRGB(x, y);
+                int currentPixel = frame.getRGB(x, y);
 
-                int red = (pixel >> 16) & 0xff;
-                int green = (pixel >> 8) & 0xff;
-                int blue = pixel & 0xff;
-                
-                // lets check if the pixel matches the object-like colors (black or dark with contrast))))))
-                if((red < 80 && green < 80 && blue < 80) || (red > 200 && green > 200 && blue > 200)) {
+                // calculate the absolute difference between the puxekls
+                int prevRed = (prevPixel >> 16) & 0xff;
+                int prevGreen = (prevPixel >> 8) & 0xff;
+                int prevBlue = prevPixel & 0xff;
+
+                int currRed = (currentPixel >> 16) & 0xff;
+                int currGreen = (currentPixel >> 8) & 0xff;
+                int currBlue = currentPixel & 0xff;
+
+                // Calculate the combined intensity difference
+                int intensityDifference = Math.abs(currRed - prevRed) +
+                        Math.abs(currGreen - prevGreen) +
+                        Math.abs(currBlue - prevBlue);
+                // lets check if the pixel matches the object-like colors (black or dark with
+                // contrast))))))
+                if ((intensityDifference > intensityThreshold)) {
                     minX = Math.min(minX, x);
                     minY = Math.min(minY, y);
                     maxX = Math.max(maxX, x);
                     maxY = Math.max(maxY, y);
-                    
+
                     objectFound = true;
 
-                   if (x>= 0 && x < width && y>=0 && y < height){
-                    result.setRGB(x, y, Color.YELLOW.getRGB());
-                   }
+                    result.setRGB(x, y, new Color(255, 255, 0, 128).getRGB());
                 }
             }
         }
-        if (objectFound) {
-            // lets draw a rectangle around the red object
-            if ((maxX - minX) > 10 && (maxY - minY) > 10) {
+
+        // Apply overlay and draw bounding box only if an object is detected
+        if (objectFound && (maxX - minX > 10) && (maxY - minY > 10)) {
+            // Add semi-transparent yellow overlay for the detected region
+            g2d.setColor(new Color(255, 255, 0, 128));
+            g2d.fillRect(minX, minY, maxX - minX, maxY - minY);
+
+            // Draw a bounding box around the detected object
             g2d.setColor(Color.GREEN);
             g2d.setStroke(new BasicStroke(2));
             g2d.drawRect(minX, minY, maxX - minX, maxY - minY);
 
             System.out.println("Bounding box coordinates: " + minX + ", " + minY + ", " + maxX + ", " + maxY);
         }
-    }
 
         g2d.dispose();
         return result;

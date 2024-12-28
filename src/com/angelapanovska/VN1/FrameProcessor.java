@@ -74,8 +74,6 @@ public class FrameProcessor {
                 int green = (pixel >> 8) & 0xff;
                 int blue = pixel & 0xff;
                 
-                
-
                 // lets check if the pixel matches the object-like colors (black or dark with contrast))))))
                 if((red < 80 && green < 80 && blue < 80) || (red > 200 && green > 200 && blue > 200)) {
                     minX = Math.min(minX, x);
@@ -83,17 +81,14 @@ public class FrameProcessor {
                     maxX = Math.max(maxX, x);
                     maxY = Math.max(maxY, y);
                     
-                
                     objectFound = true;
 
                    if (x>= 0 && x < width && y>=0 && y < height){
                     result.setRGB(x, y, Color.YELLOW.getRGB());
                    }
                 }
-        
             }
         }
-
         if (objectFound) {
             // lets draw a rectangle around the red object
             if ((maxX - minX) > 10 && (maxY - minY) > 10) {

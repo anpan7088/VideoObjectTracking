@@ -60,7 +60,10 @@ public class FrameProcessor {
         // lets copy the original framee to the result
         g2d.drawImage(frame, 0, 0, null);
 
-        int intensityThreshold = 150;
+        int intensityThreshold = 450;
+        int minWidth = 50, minHeight = 50;
+        //int minObjectSize = 50; // Minimum size of the detected object
+
         int minX = width, minY = height, maxX = 0, maxY = 0;
         boolean objectFound = false;
 
@@ -91,14 +94,17 @@ public class FrameProcessor {
                     maxY = Math.max(maxY, y);
 
                     objectFound = true;
-
-                    result.setRGB(x, y, new Color(255, 255, 0, 128).getRGB());
+                
+                    // debug testing
+                    result.setRGB(x, y, new Color(255, 0, 0).getRGB());
+                } else {
+                    result.setRGB(x, y, frame.getRGB(x, y));
                 }
             }
         }
-
+        
         // Apply overlay and draw bounding box only if an object is detected
-        if (objectFound && (maxX - minX > 10) && (maxY - minY > 10)) {
+        if (objectFound && (maxX - minX > minWidth) && (maxY - minY > minHeight)) {
             // Add semi-transparent yellow overlay for the detected region
             g2d.setColor(new Color(255, 255, 0, 128));
             g2d.fillRect(minX, minY, maxX - minX, maxY - minY);
@@ -109,6 +115,8 @@ public class FrameProcessor {
             g2d.drawRect(minX, minY, maxX - minX, maxY - minY);
 
             System.out.println("Bounding box coordinates: " + minX + ", " + minY + ", " + maxX + ", " + maxY);
+        } else {
+            System.out.println("No object detected.");
         }
 
         g2d.dispose();

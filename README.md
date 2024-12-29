@@ -32,8 +32,8 @@ This project implements a basic object-tracking system to detect and visualize m
 ## Usage
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/object-tracking.git
-cd object-tracking
+git clone https://github.com/anpan7088/VideoObjectTracking.git
+cd VideoObjectTracking
 ```
 
 ### 2. Compile the Code
@@ -41,7 +41,7 @@ Use your IDE or the terminal to compile the Java files.
 
 ### 3. Run the Application
 ```bash
-java ObjectTracking
+java VideoObjectTracking
 ```
 
 ### 4. Adjust Parameters

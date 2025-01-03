@@ -1,12 +1,14 @@
 package com.angelapanovska.VN1;
 
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 public class Main {
 
     public static void main(String[] args) {
 
-    String framesFolderPath = "C:/Users/38976/Desktop/penguins/frames";//folder where the extracted frames are save
+    String inputFolderPath = "C:/Users/38976/Desktop/penguins/frames";//folder where the extracted frames are save
 	 
     String outputFolderPath = "C:/Users/38976/Desktop/penguins/NewFrames"; // folder path where the new analyzed frames will be saved
 
@@ -16,9 +18,14 @@ public class Main {
     }
     System.out.println("Starting the video object tracking process...");
 
-    FrameProcessor frameProcessor = new FrameProcessor(framesFolderPath,  outputFolderPath);
-    frameProcessor.processFrames ();
+    // First step : Process frames to get the boxes
+    FrameProcessor frameProcessor = new FrameProcessor(inputFolderPath);
+    List<Map<String, Integer>> boundingBoxes = frameProcessor.processFrames();
 
-    System.out.println("Sequential processing completed!");
+    //Second step: Draw bounding boxes on frames
+    BoundingBoxDrawer drawer = new BoundingBoxDrawer(inputFolderPath, outputFolderPath);
+    drawer.drawBoundingBoxes(boundingBoxes);
+    
+    System.out.println("Object tracking and box drawing completed.");
     }
 }

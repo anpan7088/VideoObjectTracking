@@ -1,21 +1,21 @@
 package com.angelapanovska.VN1;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.*;
+import java.util.List;
 
 public class FrameProcessor {
     private String inputFolderPath;
     
 
-    public FrameProcessor(String inputFolderPath, String outputFolderPath) {
+    public FrameProcessor(String inputFolderPath) {
         this.inputFolderPath = inputFolderPath;
     }
 
-    public java.util.List<Map<String, Integer>> processFrames() {
-        java.util.List<Map<String, Integer>> objectCoordinatesList = new ArrayList<>(); // storing the coordinates of the detected objects
+    public List<Map<String, Integer>> processFrames() {
+        List<Map<String, Integer>> objectCoordinatesList = new ArrayList<>(); // storing the coordinates of the detected objects
         try {
             // listing all frame files in the input folder
             File inputFolder = new File(inputFolderPath);

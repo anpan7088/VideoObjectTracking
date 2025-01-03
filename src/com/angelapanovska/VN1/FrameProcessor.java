@@ -15,7 +15,7 @@ public class FrameProcessor {
     }
 
     public List<Map<String, Integer>> processFrames() {
-        List<Map<String, Integer>> objectCoordinatesList = new ArrayList<>(); // storing the coordinates of the detected objects
+        List<Map<String, Integer>> boundingBoxes = new ArrayList<>(); // storing the coordinates of the detected objects
         try {
             // listing all frame files in the input folder
             File inputFolder = new File(inputFolderPath);
@@ -23,7 +23,7 @@ public class FrameProcessor {
 
             if (frameFiles == null || frameFiles.length < 2) {
                 System.out.println("Not enough frames to process.");
-                return objectCoordinatesList;
+                return boundingBoxes;
             }
 
             Arrays.sort(frameFiles); // Sorting files to ensure sequential processing
@@ -35,9 +35,9 @@ public class FrameProcessor {
 
                 //detecting moving  objects and their coordinates
                 Map<String, Integer> objectCoordinates = detectMovingObjects(currentFrame, prevFrame);
-
+                
                 if (!objectCoordinates.isEmpty()) {
-                    objectCoordinatesList.add(objectCoordinates);
+                    boundingBoxes.add(objectCoordinates);
                 }
                 prevFrame = currentFrame; // Update the previous frame for the next iteration
             }
@@ -46,14 +46,14 @@ public class FrameProcessor {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return objectCoordinatesList;
+        return boundingBoxes;
     }
 
     private Map<String, Integer> detectMovingObjects (BufferedImage frame, BufferedImage prevFrame) {
         int width = frame.getWidth();
         int height = frame.getHeight();
 
-       int intensityThreshold = 450;
+       int intensityThreshold = 150;
        int minWidth = 50, minHeight = 50;
 
         int minX = width, minY = height, maxX = 0, maxY = 0;

@@ -4,7 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -28,27 +28,33 @@ public class BoundingBoxDrawer {
                 System.out.println("No frames found in the input folder.");
                 return;
             }
+
+            Arrays.sort(frameFiles);
+
             
             if (boundingBoxes.size() != frameFiles.length){
                 System.out.println("Mistmatch between number of frames and boxes");
+                while (boundingBoxes.size() < frameFiles.length) {
+                    boundingBoxes.add(null); // Fill with null
+                }
             }
 
             File outputFolder = new File (outputFolderPath);
             if (!outputFolder.exists()){
                 outputFolder.mkdirs();
             }
+            
 
             for (int i = 0; i < frameFiles.length; i++) {
                 BufferedImage frame = ImageIO.read(frameFiles[i]);
 
                 // Retrieve the detected object coordinates for the current frame
                 Map<String, Integer> coordinates = boundingBoxes.get(i);
-
+                
                 if (coordinates != null) {
                     // Draw bounding boxes on the frame
                     BufferedImage processedFrame = addBoundingBox(frame, coordinates);
 
-                    // Save the processed frame to the output folder
                    // Save the processed frame to the output folder
                 String outputFileName = "frame_" + (i + 1) + ".png";
                 File outputFile = new File(outputFolderPath + "/" + outputFileName);
@@ -86,6 +92,6 @@ public class BoundingBoxDrawer {
         g2d.drawRect(minX, minY, maxX - minX, maxY - minY);
 
         g2d.dispose();
-        return frame;
+        return result;
     }
 }

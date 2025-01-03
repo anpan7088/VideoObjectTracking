@@ -53,8 +53,8 @@ public class FrameProcessor {
         int width = frame.getWidth();
         int height = frame.getHeight();
 
-       int intensityThreshold = 150;
-       int minWidth = 50, minHeight = 50;
+       int intensityThreshold = 200;
+       int minWidth = 100, minHeight = 100;
 
         int minX = width, minY = height, maxX = 0, maxY = 0;
         boolean objectFound = false;

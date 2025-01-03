@@ -41,29 +41,26 @@ public class BoundingBoxDrawer {
 
             File outputFolder = new File (outputFolderPath);
             if (!outputFolder.exists()){
-                outputFolder.mkdirs();
+                boolean created = outputFolder.mkdirs();
+                System.out.println("Output folder created: " + created);
             }
             
 
             for (int i = 0; i < frameFiles.length; i++) {
                 BufferedImage frame = ImageIO.read(frameFiles[i]);
-
-                // Retrieve the detected object coordinates for the current frame
+    
                 Map<String, Integer> coordinates = boundingBoxes.get(i);
-                
                 if (coordinates != null) {
-                    // Draw bounding boxes on the frame
-                    BufferedImage processedFrame = addBoundingBox(frame, coordinates);
-
-                   // Save the processed frame to the output folder
+                    frame = addBoundingBox(frame, coordinates);
+                } else {
+                    System.out.println("No bounding box for frame: " + frameFiles[i].getName());
+                }
+    
                 String outputFileName = "frame_" + (i + 1) + ".png";
                 File outputFile = new File(outputFolderPath + "/" + outputFileName);
-                ImageIO.write(processedFrame, "png", outputFile);
-                
-                System.out.println("Processed and saved: " + outputFile.getAbsolutePath());
-                }
-            }  
-
+                ImageIO.write(frame, "png", outputFile);
+                System.out.println("Saved frame: " + outputFile.getAbsolutePath());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

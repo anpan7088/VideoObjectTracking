@@ -18,38 +18,34 @@ public class FrameProcessor {
 
         public void processFrames() {
             try {
-            // listing all frame files in the input folder
-            File inputFolder = new File(inputFolderPath);
-            File[] frameFiles = inputFolder.listFiles((dir, name) -> name.endsWith(".png"));
+                // listing all frame files in the input folder
+                File inputFolder = new File(inputFolderPath);
+                File[] frameFiles = inputFolder.listFiles((dir, name) -> name.endsWith(".png"));
 
-            if (frameFiles == null || frameFiles.length < 2) {
-                System.out.println("Not enough frames to process.");
-                return;
+                if (frameFiles == null || frameFiles.length < 2) {
+                    System.out.println("Not enough frames to process.");
+                    return;
+                }
+
+                Arrays.sort(frameFiles); // Sorting files to ensure sequential processing
+
+                for (int i = 0; i < frameFiles.length; i++) {
+                    BufferedImage currentFrame = ImageIO.read(frameFiles[i]);
+
+                    //Process the frame for red object tracking
+                    BufferedImage processedFrame = trackRedObject(currentFrame);
+
+                    // Save the result to the output folder
+                    String outputFilePath = outputFolderPath + "/frame_" + i + ".png";
+                    File outputFile = new File(outputFilePath);
+                    ImageIO.write(processedFrame, "png", outputFile);
+                }
+
+                System.out.println("Processing completed!");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-            Arrays.sort(frameFiles); // Sorting files to ensure sequential processing
-
-            BufferedImage prevFrame = ImageIO.read(frameFiles[0]); // read the first frame
-
-            for (int i = 0; i < frameFiles.length; i++) {
-                BufferedImage currentFrame = ImageIO.read(frameFiles[i]);
-
-                //Process the frame for red object tracking
-                BufferedImage processedFrame = trackRedObject(currentFrame);
-
-                // Save the result to the output folder
-                String outputFilePath = outputFolderPath + "/frame_" + i + ".png";
-                File outputFile = new File(outputFilePath);
-                ImageIO.write(processedFrame, "png", outputFile);
-
-                prevFrame = currentFrame; // Update the previous frame for the next iteration
-            }
-
-            System.out.println("Processing completed!");
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-    }
 
     private BufferedImage trackRedObject(BufferedImage frame) {
         int width = frame.getWidth();

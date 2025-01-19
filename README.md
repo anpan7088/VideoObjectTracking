@@ -37,22 +37,18 @@ This project is designed to process sequential video frames and detect moving ob
 - **`FrameProcessor`**: Handles frame-by-frame motion detection by calculating pixel differences.
   - Outputs bounding box coordinates and identifies moving objects.
 
-- **`BoundingBoxDrawer`**: Visualizes detected motion by drawing red overlays or bounding boxes on frames (currently experimental).
+- **`BoundingBoxDrawer`**: Visualizes detected motion by drawing bounding boxes on detected moving objects.
 
 - **`Main`**: Entry point for running the sequential processing workflow.
 
 ## **Limitations**
-- Bounding box functionality is experimental and may not accurately represent detected objects.
+- Bounding box is something that still needs to be worked on since it has to have different colors for different  movingobjects.
 - Requires sequentially named frames for proper operation.
 
-## **Known Issues**
-- Bounding boxes may be misaligned or incorrectly sized due to incomplete implementation.
+## **Issues**
+- Bounding boxes may be misaligned or incorrectly sized due to bugs and not completed algorithm.
 - Detection sensitivity is dependent on thresholds, which may need tuning for different input videos.
 
-## **Future Improvements**
-- Debug and refine bounding box placement.
-- Add support for customizable sensitivity thresholds.
 
-## **Contact**
-If you have any questions or issues, please contact Angela Panovska at [your email here].
+
 

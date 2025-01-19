@@ -5,14 +5,11 @@ This project implements a basic object-tracking system to detect and visualize m
 ## Features
 - Extracts frames from a video.
 - Compares consecutive frames to detect motion based on pixel intensity changes.
-- Visualizes detected motion with red highlights.
-- Draws bounding boxes around areas with significant motion.
+- Draws bounding boxes around moving objects.
 
 ## Requirements
 - Java Development Kit (JDK)
-- Any Java IDE (e.g., IntelliJ, Eclipse, etc.)
-- External Libraries (if applicable):
-  - OpenCV (optional for advanced image processing)
+- Any Java IDE IntelliJ
 
 ## How It Works
 1. **Frame Extraction:**

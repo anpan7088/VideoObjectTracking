@@ -4,7 +4,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.*;
-import java.util.List;
 
 public class FrameProcessor {
     private String inputFolderPath;
@@ -26,7 +25,8 @@ public class FrameProcessor {
                 System.out.println("Not enough frames to process.");
                 return allBoundingBoxes;
             }
-
+            //debugging
+            System.out.println("Frames detected: " + frameFiles.length);
             Arrays.sort(frameFiles); // Sorting files to ensure sequential processing
 
             BufferedImage prevFrame = ImageIO.read(frameFiles[0]); // read the first frame
@@ -55,7 +55,7 @@ public class FrameProcessor {
         int height = frame.getHeight();
 
         boolean[][] differenceMatrix = new boolean[width][height];
-        int intensityThreshold = 80;
+        int intensityThreshold = 50;
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {

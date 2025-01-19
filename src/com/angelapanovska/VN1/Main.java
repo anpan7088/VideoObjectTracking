@@ -4,11 +4,9 @@
  * 2. Sucessfully, extracting the new frames in new folder where its going to be used in the future with this command: 
  * ffmpeg -i penguins.mp4 -vf fps=1 -q:v 2 frames/frame_%04d.png to make the final video.
  * 3. Wrote an alghoritm to track the objects with any movements, all pixels are colored in yellow color and saved in new folder.
- * 4. Next step is the algorithm to draw the bounding boxes around the objects (rectangles in different colors) whenever I put or try anything with that algorithm 
- * the frames don't extract in the new folder no more, don't know why, I'm trying to fix it but I don't know how. I've been working on it for almost a week on it
- * should've contacted for help, but I thought I will fix it, my mistake I apologize for that.
+ * 4. The algorithm for bounding boxes is imperfect and it is detecting moving objects and drawing rectangles, but then the frames are probablt bigger different size
+ * colors etc... And for multiple frames it doesnt work for me for some reason. It works for 2 frames for now.
  * 
- * On my Github is my  other branch "Main" where its without the bounding boxes and it works detecting movements of the objects.
  * Github: https://github.com/anpan7088/VideoObjectTracking/tree/Main
  */
 package com.angelapanovska.VN1;
@@ -21,8 +19,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-    String inputFolderPath = "C://Users//38976//Desktop//penguins//frames/";//folder where the extracted frames are save
-    String outputFolderPath = "C://Users//38976//Desktop//penguins//NewFrames/"; // folder path where the new analyzed frames will be saved
+    String inputFolderPath = "/C://Users//38976//Desktop//dummy//Frames/";//folder where the extracted frames are save
+    String outputFolderPath = "/C://Users//38976//Desktop//dummy//Newframes/"; // folder path where the new analyzed frames will be saved
 
     File outputFolder = new File (outputFolderPath);
     if (!outputFolder.exists()){

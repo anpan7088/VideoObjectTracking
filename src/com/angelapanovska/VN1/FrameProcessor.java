@@ -16,6 +16,7 @@ public class FrameProcessor {
 
     public List<Map<String, Integer>> processFrames() {
         List<Map<String, Integer>> boundingBoxes = new ArrayList<>(); // storing the coordinates of the detected objects
+        
         try {
             // listing all frame files in the input folder
             File inputFolder = new File(inputFolderPath);
@@ -36,9 +37,9 @@ public class FrameProcessor {
                 //detecting moving  objects and their coordinates
                 Map<String, Integer> objectCoordinates = detectMovingObjects(currentFrame, prevFrame);
                 
-                if (!objectCoordinates.isEmpty()) {
+                //if (!objectCoordinates.isEmpty()) {
                     boundingBoxes.add(objectCoordinates);
-                }
+                //}
                 prevFrame = currentFrame; // Update the previous frame for the next iteration
             }
 
@@ -53,8 +54,8 @@ public class FrameProcessor {
         int width = frame.getWidth();
         int height = frame.getHeight();
 
-       int intensityThreshold = 200;
-       int minWidth = 100, minHeight = 100;
+       int intensityThreshold = 50;
+       int minWidth = 50, minHeight = 50;
 
         int minX = width, minY = height, maxX = 0, maxY = 0;
         boolean objectFound = false;

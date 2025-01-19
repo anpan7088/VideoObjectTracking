@@ -22,7 +22,6 @@ public class Main {
     public static void main(String[] args) {
 
     String inputFolderPath = "C://Users//38976//Desktop//penguins//frames/";//folder where the extracted frames are save
-	 
     String outputFolderPath = "C://Users//38976//Desktop//penguins//NewFrames/"; // folder path where the new analyzed frames will be saved
 
     File outputFolder = new File (outputFolderPath);

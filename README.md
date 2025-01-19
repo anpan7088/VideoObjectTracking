@@ -9,7 +9,7 @@ This project implements a basic object-tracking system to detect and visualize m
 
 ## Requirements
 - Java Development Kit (JDK)
-- Any Java IDE IntelliJ
+- Any Java IDE IntelliJ, Visual Studio Code
 
 ## How It Works
 1. **Frame Extraction:**

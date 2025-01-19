@@ -18,7 +18,7 @@ public class BoundingBoxDrawer {
     }
 
 
-    public void drawBoundingBoxes(List<Map<String, Integer>> boundingBoxes) {
+    public void drawBoundingBoxes(List<List<Map<String, Integer>>> allBoundingBoxes) {
         try {
             // listing all frame files in the input folder
             File inputFolder = new java.io.File(inputFolderpath);
@@ -31,37 +31,25 @@ public class BoundingBoxDrawer {
 
             Arrays.sort(frameFiles);
 
-            
-            if (boundingBoxes.size() != frameFiles.length){
-                System.out.println("Mistmatch between number of frames and boxes");
-                while (boundingBoxes.size() < frameFiles.length) {
-                    boundingBoxes.add(null); // Fill with null
-                }
-            }
-
-            File outputFolder = new File (outputFolderPath);
-            if (!outputFolder.exists()){
-                boolean created = outputFolder.mkdirs();
-                System.out.println("Output folder created: " + created);
-            }
-            
-
             for (int i = 0; i < frameFiles.length; i++) {
                 BufferedImage frame = ImageIO.read(frameFiles[i]);
     
-                Map<String, Integer> coordinates = boundingBoxes.get(i);
-                if (coordinates != null) {
-                    frame = addBoundingBox(frame, coordinates);
-                } else {
-                    System.out.println("No bounding box for frame: " + frameFiles[i].getName());
+               
+               if(i < allBoundingBoxes.size()){
+                List<Map<String, Integer>> frameBoundingBoxes = allBoundingBoxes.get(i);
+                    if(frameBoundingBoxes != null){
+                    for (Map<String, Integer> box : frameBoundingBoxes) {
+                        frame = addBoundingBox(frame, box);
+                    }
                 }
-    
+
                 String outputFileName = "frame_" + (i + 1) + ".png";
                 File outputFile = new File(outputFolderPath + "/" + outputFileName);
                 ImageIO.write(frame, "png", outputFile);
                 System.out.println("Saved frame: " + outputFile.getAbsolutePath());
             }
-        } catch (Exception e) {
+        }
+    } catch (Exception e) {
             e.printStackTrace();
         }
     }

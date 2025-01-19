@@ -8,9 +8,9 @@ public class Main {
 
     public static void main(String[] args) {
 
-    String inputFolderPath = "C:/Users/38976/Desktop/penguins/frames";//folder where the extracted frames are save
+    String inputFolderPath = "C://Users//38976//Desktop//penguins//frames/";//folder where the extracted frames are save
 	 
-    String outputFolderPath = "C:/Users/38976/Desktop/penguins/NewFrames"; // folder path where the new analyzed frames will be saved
+    String outputFolderPath = "C://Users//38976//Desktop//penguins//NewFrames/"; // folder path where the new analyzed frames will be saved
 
     File outputFolder = new File (outputFolderPath);
     if (!outputFolder.exists()){
@@ -20,7 +20,7 @@ public class Main {
 
     // First step : Process frames to get the boxes
     FrameProcessor frameProcessor = new FrameProcessor(inputFolderPath);
-    List<Map<String, Integer>> boundingBoxes = frameProcessor.processFrames();
+    List<List<Map<String, Integer>>> boundingBoxes = frameProcessor.processFrames();
 
     //Second step: Draw bounding boxes on frames
     BoundingBoxDrawer drawer = new BoundingBoxDrawer(inputFolderPath, outputFolderPath);

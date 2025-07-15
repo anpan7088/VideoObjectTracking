@@ -1,0 +1,82 @@
+package com.angelapanovska.VN1;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+public class BoundingBoxDrawer {
+    private String inputFolderpath;
+    private String outputFolderPath;
+
+    public BoundingBoxDrawer (String inputFolderPath, String outputFolderPath){
+        this.inputFolderpath=inputFolderPath;
+        this.outputFolderPath=outputFolderPath;
+    }
+
+
+    public void drawBoundingBoxes(List<List<Map<String, Integer>>> allBoundingBoxes) {
+        try {
+            // listing all frame files in the input folder
+            File inputFolder = new java.io.File(inputFolderpath);
+            File[] frameFiles = inputFolder.listFiles((dir, name) -> name.endsWith(".png"));
+            
+            if (frameFiles == null || frameFiles.length == 0) {
+                System.out.println("No frames found in the input folder.");
+                return;
+            }
+
+            Arrays.sort(frameFiles);
+
+            for (int i = 0; i < frameFiles.length; i++) {
+                BufferedImage frame = ImageIO.read(frameFiles[i]);
+    
+               
+               if(i < allBoundingBoxes.size()){
+                List<Map<String, Integer>> frameBoundingBoxes = allBoundingBoxes.get(i);
+                    if(frameBoundingBoxes != null){
+                    for (Map<String, Integer> box : frameBoundingBoxes) {
+                        frame = addBoundingBox(frame, box);
+                    }
+                }
+
+                String outputFileName = "frame_" + (i + 1) + ".png";
+                File outputFile = new File(outputFolderPath + "/" + outputFileName);
+                ImageIO.write(frame, "png", outputFile);
+                System.out.println("Saved frame: " + outputFile.getAbsolutePath());
+            }
+        }
+    } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private BufferedImage addBoundingBox(BufferedImage frame, Map<String, Integer> coordinates) {
+        // Implementation of addBoundingBox method
+        int width = frame.getWidth();
+        int height = frame.getHeight();
+
+        BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = result.createGraphics();
+
+        // copyuing the original frame to the result
+        g2d.drawImage (frame, 0,0, null);
+
+        //coordinate extraction
+        int minX= coordinates.get("minX");
+        int minY = coordinates.get ("minY");
+        int maxX = coordinates.get ("maxX");
+        int maxY = coordinates.get ("maxY");
+
+        //drawing rectangle bounding box
+        g2d.setColor(Color.GREEN);
+        g2d.setStroke(new BasicStroke(2));
+        g2d.drawRect(minX, minY, maxX - minX, maxY - minY);
+
+        g2d.dispose();
+        return result;
+    }
+}

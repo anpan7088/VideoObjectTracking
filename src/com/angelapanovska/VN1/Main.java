@@ -8,6 +8,8 @@
  * colors etc... And for multiple frames it doesnt work for me for some reason. It works for 2 frames for now.
  * 
  * Github: https://github.com/anpan7088/VideoObjectTracking/tree/Main
+ * 
+ * testing from MacBook github!
  */
 package com.angelapanovska.VN1;
 

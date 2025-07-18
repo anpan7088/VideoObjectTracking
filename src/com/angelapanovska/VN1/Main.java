@@ -1,3 +1,5 @@
+// installing SDK adoptium so my projects compile...:)
+
 package com.angelapanovska.VN1;
 
 import java.io.File;

@@ -1,45 +1,81 @@
-/*89211031 - Angela Panovska
- * Sequential part: 
- * 1. Extracted frames from the penguin video(could be any video) with the given app FFmpeg.
- * 2. Sucessfully, extracting the new frames in new folder where its going to be used in the future with this command: 
- * ffmpeg -i penguins.mp4 -vf fps=1 -q:v 2 frames/frame_%04d.png to make the final video.
- * 3. Wrote an alghoritm to track the objects with any movements, all pixels are colored in yellow color and saved in new folder.
- * 4. The algorithm for bounding boxes is imperfect and it is detecting moving objects and drawing rectangles, but then the frames are probablt bigger different size
- * colors etc... And for multiple frames it doesnt work for me for some reason. It works for 2 frames for now.
- * 
- * Github: https://github.com/anpan7088/VideoObjectTracking/tree/Main
- * 
- * testing from MacBook github!
- */
 package com.angelapanovska.VN1;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Starting the video object tracking process...");
-    
-    String framesFolderPath = "frames"//folder where the extracted frames are save
-	 
-    String outputFolderPath = "NewFrames"; // folder path where the new analyzed frames will be saved
+        String videoInputPath = "penguins/input_video.mp4";
+        String framesFolderPath = "penguins/frames";
+        String outputFolderPath = "penguins/NewFrames";
+        String outputVideoPath = "penguins/output_video.mp4";
 
-    File outputFolder = new File (outputFolderPath);
-    if (!outputFolder.exists()){
-        outputFolder.mkdir(); // checking output folder exists
+        long totalStartTime = System.currentTimeMillis();
+
+        try {
+            // STEP 1: Extract frames from video using FFmpeg
+            long startExtract = System.currentTimeMillis();
+            extractFramesWithFFmpeg(videoInputPath, framesFolderPath);
+            long endExtract = System.currentTimeMillis();
+            System.out.println("Frame extraction time: " + (endExtract - startExtract) + " ms");
+
+            // STEP 2: Process frames to detect moving objects
+            long startProcessing = System.currentTimeMillis();
+            FrameProcessor frameProcessor = new FrameProcessor(framesFolderPath);
+            List<List<BoxWithID>> boundingBoxes = frameProcessor.processFrames();
+            long endProcessing = System.currentTimeMillis();
+            System.out.println("Frame analysis time: " + (endProcessing - startProcessing) + " ms");
+
+            // Ensure output folder exists
+            File outputFolder = new File(outputFolderPath);
+            if (!outputFolder.exists()) {
+                outputFolder.mkdir();
+            }
+
+            // STEP 3: Draw bounding boxes
+            long startDrawing = System.currentTimeMillis();
+            BoundingBoxDrawer drawer = new BoundingBoxDrawer(framesFolderPath, outputFolderPath);
+            drawer.drawBoundingBoxes(boundingBoxes);
+            long endDrawing = System.currentTimeMillis();
+            System.out.println("Bounding box drawing time: " + (endDrawing - startDrawing) + " ms");
+
+            // STEP 4: Combine annotated frames into video
+            long startCombine = System.currentTimeMillis();
+            reassembleFramesWithFFmpeg(outputFolderPath, outputVideoPath);
+            long endCombine = System.currentTimeMillis();
+            System.out.println("Video recombination time: " + (endCombine - startCombine) + " ms");
+
+            long totalEndTime = System.currentTimeMillis();
+            System.out.println("Total processing time: " + (totalEndTime - totalStartTime) + " ms");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    System.out.println("Starting the video object tracking process...");
 
-    // First step : Process frames to get the boxes
-    FrameProcessor frameProcessor = new FrameProcessor(inputFolderPath);
-    List<List<Map<String, Integer>>> boundingBoxes = frameProcessor.processFrames();
+    private static void extractFramesWithFFmpeg(String videoPath, String outputFolderPath) throws Exception {
+        File folder = new File(outputFolderPath);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
 
-    //Second step: Draw bounding boxes on frames
-    BoundingBoxDrawer drawer = new BoundingBoxDrawer(framesFolderPath, outputFolderPath);
-    drawer.drawBoundingBoxes(boundingBoxes);
-    
-    System.out.println("Object tracking and box drawing completed.");
+        ProcessBuilder pb = new ProcessBuilder(
+                "ffmpeg", "-i", videoPath, "-q:v", "2", outputFolderPath + "/frame_%d.png"
+        );
+        pb.inheritIO();
+        Process process = pb.start();
+        process.waitFor();
+    }
+
+    private static void reassembleFramesWithFFmpeg(String inputFolderPath, String outputVideoPath) throws Exception {
+        ProcessBuilder pb = new ProcessBuilder(
+                "ffmpeg", "-framerate", "10", "-i",
+                inputFolderPath + "/frame_%d.png",
+                "-c:v", "libx264", "-pix_fmt", "yuv420p", outputVideoPath
+        );
+        pb.inheritIO();
+        Process process = pb.start();
+        process.waitFor();
     }
 }

@@ -8,7 +8,7 @@ import java.util.*;
 public class FrameProcessor {
     private String inputFolderPath;
 
-    public FrameProcessor(String inputFolderPath) {
+    public FrameProcessor(String framesFolderPath) {
         this.inputFolderPath = inputFolderPath;
     }
 

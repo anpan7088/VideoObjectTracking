@@ -20,10 +20,11 @@ import java.util.Map;
 public class Main {
 
     public static void main(String[] args) {
+        System.out.println("Starting the video object tracking process...");
     
-    String framesFolderPath = "C:/Users/38976/Desktop/penguins/frames";//folder where the extracted frames are save
+    String framesFolderPath = "frames"//folder where the extracted frames are save
 	 
-    String outputFolderPath = "C:/Users/38976/Desktop/penguins/NewFrames"; // folder path where the new analyzed frames will be saved
+    String outputFolderPath = "NewFrames"; // folder path where the new analyzed frames will be saved
 
     File outputFolder = new File (outputFolderPath);
     if (!outputFolder.exists()){
@@ -36,7 +37,7 @@ public class Main {
     List<List<Map<String, Integer>>> boundingBoxes = frameProcessor.processFrames();
 
     //Second step: Draw bounding boxes on frames
-    BoundingBoxDrawer drawer = new BoundingBoxDrawer(inputFolderPath, outputFolderPath);
+    BoundingBoxDrawer drawer = new BoundingBoxDrawer(framesFolderPath, outputFolderPath);
     drawer.drawBoundingBoxes(boundingBoxes);
     
     System.out.println("Object tracking and box drawing completed.");

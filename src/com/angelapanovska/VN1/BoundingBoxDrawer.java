@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.*;
+import java.util.List;
 
 public class BoundingBoxDrawer {
     private String inputFolderpath;
@@ -22,7 +23,9 @@ public class BoundingBoxDrawer {
         this.outputFolderPath = outputFolderPath;
     }
 
-    public void drawBoundingBoxes(List<List<Map<String, Integer>>> allBoundingBoxes) {
+    public void drawBoundingBoxes(List<List<BoxWithID>> allBoundingBoxes)
+
+ {
         try {
             File inputFolder = new File(inputFolderpath);
             File[] frameFiles = inputFolder.listFiles((dir, name) -> name.endsWith(".png"));
@@ -38,16 +41,18 @@ public class BoundingBoxDrawer {
 
             for (int i = 0; i < frameFiles.length; i++) {
                 BufferedImage frame = ImageIO.read(frameFiles[i]);
-                List<Map<String, Integer>> frameBoxes = i < allBoundingBoxes.size() ? allBoundingBoxes.get(i) : null;
+                List<BoxWithID> frameBoxes = i < allBoundingBoxes.size() ? allBoundingBoxes.get(i) : null;
+
 
                 if (frameBoxes != null) {
                     List<BoxWithID> currentBoxes = new ArrayList<>();
 
-                    for (Map<String, Integer> box : frameBoxes) {
-                        int minX = box.get("minX");
-                        int minY = box.get("minY");
-                        int maxX = box.get("maxX");
-                        int maxY = box.get("maxY");
+                    for (BoxWithID box : frameBoxes)
+ {
+                        int minX = box.minX;
+                        int minY = box.minY;
+                        int maxX = box.maxX;
+                        int maxY = box.maxY;
                         Point center = new Point((minX + maxX) / 2, (minY + maxY) / 2);
 
                         // Match to previous box (based on distance)

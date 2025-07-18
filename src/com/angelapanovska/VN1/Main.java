@@ -8,7 +8,7 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        String videoInputPath = "penguins/input_video.mp4";
+        String videoInputPath = "penguins/video.mp4";
         String framesFolderPath = "penguins/frames";
         String outputFolderPath = "penguins/NewFrames";
         String outputVideoPath = "penguins/output_video.mp4";

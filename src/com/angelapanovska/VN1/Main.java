@@ -8,10 +8,10 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        String videoInputPath = "Desktop/penguins/video.mp4";
-        String framesFolderPath = "Desktop/penguins/frames";
-        String outputFolderPath = "Desktop/penguins/NewFrames";
-        String outputVideoPath = "Desktop/penguins/output_video.mp4";
+        String videoInputPath = "/Users/angelapanovska/Desktop/penguins/video.mp4";
+        String framesFolderPath = "/Users/angelapanovska/Desktop/penguins/frames";
+        String outputFolderPath = "/Users/angelapanovska/Desktop/penguins/NewFrames";
+        String outputVideoPath = "/Users/angelapanovska/Desktop/penguins/output_video.mp4";
 
         long totalStartTime = System.currentTimeMillis();
 

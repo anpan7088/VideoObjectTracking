@@ -73,7 +73,7 @@ public class Main {
     private static void reassembleFramesWithFFmpeg(String inputFolderPath, String outputVideoPath) throws Exception {
         ProcessBuilder pb = new ProcessBuilder(
                 "ffmpeg", "-framerate", "10", "-i",
-                inputFolderPath + "/frame_%04d.png",
+                inputFolderPath + "/frame_%d.png",
                 "-c:v", "libx264", "-pix_fmt", "yuv420p", outputVideoPath
         );
         pb.inheritIO();

@@ -47,7 +47,7 @@ public class FrameProcessor {
         int width = frame.getWidth();
         int height = frame.getHeight();
         boolean[][] diff = new boolean[width][height];
-        int threshold = 10;
+        int threshold = 50;
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
